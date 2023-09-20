@@ -4,10 +4,29 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
 	"github.com/labstack/echo/v4"
 )
 
 type M map[string]interface{}
+
+var ActionIndex = func(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("from action index"))
+}
+
+var ActionHome = http.HandlerFunc(
+	func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("from action home"))
+	},
+)
+
+var ActionAbout = echo.WrapHandler(
+	http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("from action about"))
+		},
+	),
+)
 
 func NewRouter(r *echo.Echo) {
 
@@ -16,7 +35,7 @@ func NewRouter(r *echo.Echo) {
 		return ctx.String(http.StatusOK, data)
 	})
 	// response method redirect
-	r.GET("/index", func(ctx echo.Context) error {
+	r.GET("/redirect", func(ctx echo.Context) error {
 		return ctx.Redirect(http.StatusTemporaryRedirect, "/")
 	})
 	// response method html
@@ -57,5 +76,9 @@ func NewRouter(r *echo.Echo) {
 
 		return ctx.String(http.StatusOK, data)
 	})
+
+	r.GET("/index", echo.WrapHandler(http.HandlerFunc(ActionIndex)))
+	r.GET("/home", echo.WrapHandler(ActionHome))
+	r.GET("/about", ActionAbout)
 
 }
