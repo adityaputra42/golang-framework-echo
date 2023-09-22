@@ -1,14 +1,12 @@
 package main
 
 import (
-	"golang_framework_echo/app"
-
-	"github.com/labstack/echo/v4"
+	"golang_framework_echo/db"
+	"golang_framework_echo/routes"
 )
 
 func main() {
-	r := echo.New()
-	// response method string
-	app.NewRouter(r)
-	r.Start(":9000")
+	db.InitDB()
+	e := routes.Init()
+	e.Logger.Fatal(e.Start(":9000"))
 }
