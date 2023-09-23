@@ -1,6 +1,6 @@
-package domain
+package request
 
-type Pegawai struct {
+type UpdatePegawai struct {
 	Id      int    `json:"id"`
 	Name    string `json:"nama"`
 	Alamat  string `json:"alamat"`

@@ -4,8 +4,9 @@ import (
 	// "golang_framework_echo/service"
 
 	"golang_framework_echo/helper"
-	"golang_framework_echo/models/request"
-	"golang_framework_echo/repository"
+	"golang_framework_echo/models/web"
+	"golang_framework_echo/models/web/request"
+	"golang_framework_echo/service"
 	"net/http"
 	"strconv"
 
@@ -13,7 +14,7 @@ import (
 )
 
 type PegawaiControllerImpl struct {
-	PegawaiRepository repository.PegawaiRepository
+	PegawaiService service.PegawaiService
 }
 
 // Create implements PegawaiController.
@@ -22,12 +23,18 @@ func (controller *PegawaiControllerImpl) Create(c echo.Context) error {
 	if err := c.Bind(body); err != nil {
 		return err
 	}
-	result, err := controller.PegawaiRepository.Create(*body)
+	result, err := controller.PegawaiService.Create(*body)
 
 	if err != nil {
+
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
-	return c.JSON(http.StatusCreated, result)
+	responseData := web.BaseResponse{
+		Status:  http.StatusCreated,
+		Message: "Success create pegawai",
+		Data:    result,
+	}
+	return c.JSON(http.StatusCreated, responseData)
 }
 
 // Delete implements PegawaiController.
@@ -35,20 +42,29 @@ func (controller *PegawaiControllerImpl) Delete(c echo.Context) error {
 	pegawaiId := c.Param("pegawaiId")
 	id, er := strconv.Atoi(pegawaiId)
 	helper.PanicIfError(er)
-	result, err := controller.PegawaiRepository.Delete(id)
+	err := controller.PegawaiService.Delete(id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
-	return c.JSON(http.StatusOK, result)
+	responseData := web.BaseResponse{
+		Status:  http.StatusOK,
+		Message: "Succes delete pegawai",
+	}
+	return c.JSON(http.StatusOK, responseData)
 }
 
 // FindAll implements PegawaiController.
 func (controller *PegawaiControllerImpl) FindAll(c echo.Context) error {
-	result, err := controller.PegawaiRepository.FindAll()
+	result, err := controller.PegawaiService.FindAll()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
-	return c.JSON(http.StatusOK, result)
+	responseData := web.BaseResponse{
+		Status:  http.StatusCreated,
+		Message: "Success",
+		Data:    result,
+	}
+	return c.JSON(http.StatusCreated, responseData)
 }
 
 // FindById implements PegawaiController.
@@ -56,11 +72,16 @@ func (controller *PegawaiControllerImpl) FindById(c echo.Context) error {
 	pegawaiId := c.QueryParam("pegawaiId")
 	id, err := strconv.Atoi(pegawaiId)
 	helper.PanicIfError(err)
-	result, err := controller.PegawaiRepository.FindById(id)
+	result, err := controller.PegawaiService.FindById(id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
-	return c.JSON(http.StatusOK, result)
+	responseData := web.BaseResponse{
+		Status:  http.StatusCreated,
+		Message: "Success",
+		Data:    result,
+	}
+	return c.JSON(http.StatusCreated, responseData)
 }
 
 // Update implements PegawaiController.
@@ -73,13 +94,18 @@ func (controller *PegawaiControllerImpl) Update(c echo.Context) error {
 	if err := c.Bind(body); err != nil {
 		return err
 	}
-	result, err := controller.PegawaiRepository.Update(*body)
+	result, err := controller.PegawaiService.Update(*body)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
-	return c.JSON(http.StatusOK, result)
+	responseData := web.BaseResponse{
+		Status:  http.StatusCreated,
+		Message: "Success",
+		Data:    result,
+	}
+	return c.JSON(http.StatusCreated, responseData)
 }
 
-func NewPegawaiController(pegawaiRepository repository.PegawaiRepository) PegawaiController {
-	return &PegawaiControllerImpl{PegawaiRepository: pegawaiRepository}
+func NewPegawaiController(pegawaiService service.PegawaiService) *PegawaiControllerImpl {
+	return &PegawaiControllerImpl{PegawaiService: pegawaiService}
 }

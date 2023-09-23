@@ -5,93 +5,64 @@ import (
 	"golang_framework_echo/db"
 	"golang_framework_echo/helper"
 	"golang_framework_echo/models/domain"
-	"golang_framework_echo/models/request"
-	"golang_framework_echo/models/web"
-	"net/http"
 )
 
 type PegawaiRepositoryImpl struct {
 }
 
 // Create implements PegawaiRepository.
-func (repository *PegawaiRepositoryImpl) Create(pegawai request.CreatePegawai) (web.BaseResponse, error) {
+func (repository *PegawaiRepositoryImpl) Create(pegawai domain.Pegawai) domain.Pegawai {
 	con := db.CreateCon()
 	SQL := "insert into pegawai(name,alamat,telepon) values(?,?,?)"
-	result, err := con.Exec(SQL, pegawai.Name, pegawai.Alamat, pegawai.Telepon)
+	statement, err := con.Prepare(SQL)
+	helper.PanicIfError(err)
+	result, err := statement.Exec(pegawai.Name, pegawai.Alamat, pegawai.Telepon)
 	helper.PanicIfError(err)
 	id, err := result.LastInsertId()
 	helper.PanicIfError(err)
-	resPegawai := domain.Pegawai{
-		Id:      int(id),
-		Name:    pegawai.Name,
-		Alamat:  pegawai.Alamat,
-		Telepon: pegawai.Telepon,
-	}
-
-	response := web.BaseResponse{
-		Status:  http.StatusOK,
-		Message: "Success",
-		Data:    resPegawai,
-	}
-	return response, nil
+	pegawai.Id = int(id)
+	return pegawai
 }
 
 // Delete implements PegawaiRepository.
-func (repository *PegawaiRepositoryImpl) Delete(pegawaiId int) (web.BaseResponse, error) {
+func (repository *PegawaiRepositoryImpl) Delete(pegawai domain.Pegawai) {
 	con := db.CreateCon()
 	SQL := "delete from pegawai where id = ?"
-	_, err := con.Exec(SQL, pegawaiId)
+	_, err := con.Exec(SQL, pegawai.Id)
 	helper.PanicIfError(err)
-	response := web.BaseResponse{
-		Status:  http.StatusOK,
-		Message: "Success",
-	}
-	return response, nil
 
 }
 
 // FindById implements PegawaiRepository.
-func (repository *PegawaiRepositoryImpl) FindById(pegawaiId int) (web.BaseResponse, error) {
+func (repository *PegawaiRepositoryImpl) FindById(pegawaiId int) (domain.Pegawai, error) {
 	con := db.CreateCon()
 	SQL := "select * from pegawai where id = ?"
 	rows, err := con.Query(SQL, pegawaiId)
 	pegawai := domain.Pegawai{}
 	helper.PanicIfError(err)
 	defer rows.Close()
-	response := web.BaseResponse{}
 	if rows.Next() {
 		err := rows.Scan(&pegawai.Id, &pegawai.Name, &pegawai.Alamat, &pegawai.Telepon)
 		helper.PanicIfError(err)
-		response.Status = http.StatusOK
-		response.Message = "Success"
-		response.Data = pegawai
-		return response, nil
-
+		return pegawai, nil
 	} else {
-		response.Status = http.StatusNotFound
-		response.Message = "pegawai is not found"
-		response.Data = pegawai
-		return response, errors.New("pegawai is not found")
+
+		return pegawai, errors.New("pegawai is not found")
 	}
 }
 
 // Update implements PegawaiRepository.
-func (repository *PegawaiRepositoryImpl) Update(pegawai request.UpdatePegawai) (web.BaseResponse, error) {
+func (repository *PegawaiRepositoryImpl) Update(pegawai domain.Pegawai) domain.Pegawai {
 	con := db.CreateCon()
 	SQL := "update pegawai set name = ? ,alamat =?, telepon=? where id = ?"
 	_, err := con.Exec(SQL, pegawai.Name, pegawai.Alamat, pegawai.Telepon, pegawai.Id)
 	helper.PanicIfError(err)
 
-	response := web.BaseResponse{
-		Status:  http.StatusOK,
-		Message: "Success",
-		Data:    pegawai,
-	}
-	return response, nil
+	return pegawai
 }
 
 // FindAll implements PegawaiRepository.
-func (repository *PegawaiRepositoryImpl) FindAll() (web.BaseResponse, error) {
+func (repository *PegawaiRepositoryImpl) FindAll() []domain.Pegawai {
 	con := db.CreateCon()
 	SQL := "select * from pegawai"
 	rows, err := con.Query(SQL)
@@ -104,14 +75,10 @@ func (repository *PegawaiRepositoryImpl) FindAll() (web.BaseResponse, error) {
 		helper.PanicIfError(err)
 		listPegawai = append(listPegawai, pegawai)
 	}
-	response := web.BaseResponse{
-		Status:  http.StatusOK,
-		Message: "Success",
-		Data:    listPegawai,
-	}
-	return response, nil
+
+	return listPegawai
 }
 
-func NewPegawaiRepository() PegawaiRepository {
+func NewPegawaiRepository() *PegawaiRepositoryImpl {
 	return &PegawaiRepositoryImpl{}
 }

@@ -1,14 +1,13 @@
 package repository
 
 import (
-	"golang_framework_echo/models/request"
-	"golang_framework_echo/models/web"
+	"golang_framework_echo/models/domain"
 )
 
 type PegawaiRepository interface {
-	Create(pegawai request.CreatePegawai) (web.BaseResponse, error)
-	Update(pegawai request.UpdatePegawai) (web.BaseResponse, error)
-	Delete(pegawaiId int) (web.BaseResponse, error)
-	FindById(pegawaiId int) (web.BaseResponse, error)
-	FindAll() (web.BaseResponse, error)
+	Create(pegawai domain.Pegawai) domain.Pegawai
+	Update(pegawai domain.Pegawai) domain.Pegawai
+	Delete(pegawai domain.Pegawai)
+	FindById(pegawaiId int) (domain.Pegawai, error)
+	FindAll() []domain.Pegawai
 }
