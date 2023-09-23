@@ -1,122 +1,85 @@
 package controller
 
 import (
-	"golang_framework_echo/service"
+	// "golang_framework_echo/service"
 
-	echo "github.com/labstack/echo/v4"
+	"golang_framework_echo/helper"
+	"golang_framework_echo/models/request"
+	"golang_framework_echo/repository"
+	"net/http"
+	"strconv"
+
+	"github.com/labstack/echo/v4"
 )
 
 type PegawaiControllerImpl struct {
-	PegawaiService service.PegawaiService
+	PegawaiRepository repository.PegawaiRepository
 }
 
 // Create implements PegawaiController.
-func (controller *PegawaiControllerImpl) Create(c *echo.Context) {
-	// body := request.CreatePegawai{}
-	// helper.ReadFromRequestBody(req, &body)
-	// pegawai := controller.PegawaiService.Create(req.Context(), body)
-	// response := web.BaseResponse{
-	// 	Status:  200,
-	// 	Message: "Ok",
-	// 	Data:    pegawai,
-	// }
-	// helper.WriteToResponseBody(writer, response)
+func (controller *PegawaiControllerImpl) Create(c echo.Context) error {
+	body := new(request.CreatePegawai)
+	if err := c.Bind(body); err != nil {
+		return err
+	}
+	result, err := controller.PegawaiRepository.Create(*body)
 
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+	return c.JSON(http.StatusCreated, result)
 }
 
 // Delete implements PegawaiController.
-func (controller *PegawaiControllerImpl) Delete(c *echo.Context) {
-	panic("unimplemented")
+func (controller *PegawaiControllerImpl) Delete(c echo.Context) error {
+	pegawaiId := c.Param("pegawaiId")
+	id, er := strconv.Atoi(pegawaiId)
+	helper.PanicIfError(er)
+	result, err := controller.PegawaiRepository.Delete(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+	return c.JSON(http.StatusOK, result)
 }
 
 // FindAll implements PegawaiController.
-func (controller *PegawaiControllerImpl) FindAll(c *echo.Context) {
-	panic("unimplemented")
+func (controller *PegawaiControllerImpl) FindAll(c echo.Context) error {
+	result, err := controller.PegawaiRepository.FindAll()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+	return c.JSON(http.StatusOK, result)
 }
 
 // FindById implements PegawaiController.
-func (controller *PegawaiControllerImpl) FindById(c *echo.Context) {
-	panic("unimplemented")
+func (controller *PegawaiControllerImpl) FindById(c echo.Context) error {
+	pegawaiId := c.QueryParam("pegawaiId")
+	id, err := strconv.Atoi(pegawaiId)
+	helper.PanicIfError(err)
+	result, err := controller.PegawaiRepository.FindById(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+	return c.JSON(http.StatusOK, result)
 }
 
 // Update implements PegawaiController.
-func (controller *PegawaiControllerImpl) Update(c *echo.Context) {
-	panic("unimplemented")
+func (controller *PegawaiControllerImpl) Update(c echo.Context) error {
+	pegawaiId := c.Param("pegawaiId")
+	id, err := strconv.Atoi(pegawaiId)
+	helper.PanicIfError(err)
+	body := new(request.UpdatePegawai)
+	body.Id = id
+	if err := c.Bind(body); err != nil {
+		return err
+	}
+	result, err := controller.PegawaiRepository.Update(*body)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+	return c.JSON(http.StatusOK, result)
 }
 
-func NewPegawaiController(pegawaiService service.PegawaiService) PegawaiController {
-	return &PegawaiControllerImpl{PegawaiService: pegawaiService}
+func NewPegawaiController(pegawaiRepository repository.PegawaiRepository) PegawaiController {
+	return &PegawaiControllerImpl{PegawaiRepository: pegawaiRepository}
 }
-
-// // Create implements PegawaiController.
-// func (controller *PegawaiControllerImpl) Create(writer http.ResponseWriter, req *http.Request, params httprouter.Params) {
-// 	body := request.CreatePegawai{}
-// 	helper.ReadFromRequestBody(req, &body)
-// 	pegawai := controller.PegawaiService.Create(req.Context(), body)
-// 	response := web.BaseResponse{
-// 		Status:  200,
-// 		Message: "Ok",
-// 		Data:    pegawai,
-// 	}
-// 	helper.WriteToResponseBody(writer, response)
-// }
-
-// // Delete implements PegawaiController.
-// func (controller *PegawaiControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-// 	pegawaiId := params.ByName("pegawaiId")
-// 	id, err := strconv.Atoi(pegawaiId)
-// 	helper.PanicIfError(err)
-// 	controller.PegawaiService.Delete(request.Context(), id)
-// 	response := web.BaseResponse{
-// 		Status:  200,
-// 		Message: "Ok",
-// 	}
-
-// 	helper.WriteToResponseBody(writer, response)
-// }
-
-// // FindAll implements PegawaiController.
-// func (controller *PegawaiControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-// 	listPegawai := controller.PegawaiService.FindAll(request.Context())
-// 	webResponse := web.BaseResponse{
-// 		Status:  200,
-// 		Message: "Ok",
-// 		Data:    listPegawai,
-// 	}
-// 	helper.WriteToResponseBody(writer, webResponse)
-
-// }
-
-// // FindById implements PegawaiController.
-// func (controller *PegawaiControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-// 	pegawaiId := params.ByName("pegawaiId")
-// 	id, err := strconv.Atoi(pegawaiId)
-// 	helper.PanicIfError(err)
-
-// 	pegawai := controller.PegawaiService.FindById(request.Context(), id)
-// 	webResponse := web.BaseResponse{
-// 		Status:  200,
-// 		Message: "Ok",
-// 		Data:    pegawai,
-// 	}
-// 	helper.WriteToResponseBody(writer, webResponse)
-// }
-
-// // Update implements PegawaiController.
-// func (controller *PegawaiControllerImpl) Update(writer http.ResponseWriter, req *http.Request, params httprouter.Params) {
-// 	body := request.UpdatePegawai{}
-// 	helper.ReadFromRequestBody(req, &body)
-
-// 	pegawaiId := params.ByName("pegawaiId")
-// 	id, err := strconv.Atoi(pegawaiId)
-// 	helper.PanicIfError(err)
-// 	body.Id = id
-
-// 	pegawai := controller.PegawaiService.Update(req.Context(), body)
-// 	webResponse := web.BaseResponse{
-// 		Status:  200,
-// 		Message: "Ok",
-// 		Data:    pegawai,
-// 	}
-// 	helper.WriteToResponseBody(writer, webResponse)
-// }

@@ -5,9 +5,9 @@ import (
 )
 
 type PegawaiController interface {
-	Create(c *echo.Context)
-	Update(c *echo.Context)
-	Delete(c *echo.Context)
-	FindById(c *echo.Context)
-	FindAll(c *echo.Context)
+	Create(c echo.Context) error
+	Update(c echo.Context) error
+	Delete(c echo.Context) error
+	FindById(c echo.Context) error
+	FindAll(c echo.Context) error
 }

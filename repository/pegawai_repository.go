@@ -1,15 +1,14 @@
 package repository
 
 import (
-	"context"
-	"database/sql"
-	"golang_framework_echo/models/domain"
+	"golang_framework_echo/models/request"
+	"golang_framework_echo/models/web"
 )
 
 type PegawaiRepository interface {
-	Create(ctx context.Context, tx *sql.Tx, pegawai domain.Pegawai) domain.Pegawai
-	Update(ctx context.Context, tx *sql.Tx, pegawai domain.Pegawai) domain.Pegawai
-	Delete(ctx context.Context, tx *sql.Tx, pegawai domain.Pegawai)
-	FindById(ctx context.Context, tx *sql.Tx, pegawaiId int) (domain.Pegawai, error)
-	FindAll(ctx context.Context, tx *sql.Tx) []domain.Pegawai
+	Create(pegawai request.CreatePegawai) (web.BaseResponse, error)
+	Update(pegawai request.UpdatePegawai) (web.BaseResponse, error)
+	Delete(pegawaiId int) (web.BaseResponse, error)
+	FindById(pegawaiId int) (web.BaseResponse, error)
+	FindAll() (web.BaseResponse, error)
 }
