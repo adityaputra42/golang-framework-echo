@@ -8,7 +8,7 @@ import (
 func ToPegawaiResponse(pegawai domain.Pegawai) response.PegawaiResponse {
 	return response.PegawaiResponse{
 		Id:      pegawai.Id,
-		Name:    pegawai.Name,
+		Nama:    pegawai.Nama,
 		Alamat:  pegawai.Alamat,
 		Telepon: pegawai.Telepon,
 	}

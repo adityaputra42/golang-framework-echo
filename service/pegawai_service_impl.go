@@ -21,7 +21,7 @@ func (service *PegawaiServiceImpl) Create(req request.CreatePegawai) (response.P
 	err := service.Validate.Struct(req)
 	helper.PanicIfError(err)
 	pegawai := domain.Pegawai{
-		Name:    req.Name,
+		Nama:    req.Nama,
 		Alamat:  req.Alamat,
 		Telepon: req.Telepon,
 	}
@@ -63,7 +63,7 @@ func (service *PegawaiServiceImpl) Update(req request.UpdatePegawai) (response.P
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-	pegawai.Name = req.Name
+	pegawai.Nama = req.Nama
 	pegawai.Alamat = req.Alamat
 	pegawai.Telepon = req.Telepon
 

@@ -69,7 +69,7 @@ func (controller *PegawaiControllerImpl) FindAll(c echo.Context) error {
 
 // FindById implements PegawaiController.
 func (controller *PegawaiControllerImpl) FindById(c echo.Context) error {
-	pegawaiId := c.QueryParam("pegawaiId")
+	pegawaiId := c.Param("pegawaiId")
 	id, err := strconv.Atoi(pegawaiId)
 	helper.PanicIfError(err)
 	result, err := controller.PegawaiService.FindById(id)

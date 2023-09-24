@@ -13,10 +13,10 @@ type PegawaiRepositoryImpl struct {
 // Create implements PegawaiRepository.
 func (repository *PegawaiRepositoryImpl) Create(pegawai domain.Pegawai) domain.Pegawai {
 	con := db.CreateCon()
-	SQL := "insert into pegawai(name,alamat,telepon) values(?,?,?)"
+	SQL := "insert into pegawai(nama,alamat,telepon) values(?,?,?)"
 	statement, err := con.Prepare(SQL)
 	helper.PanicIfError(err)
-	result, err := statement.Exec(pegawai.Name, pegawai.Alamat, pegawai.Telepon)
+	result, err := statement.Exec(pegawai.Nama, pegawai.Alamat, pegawai.Telepon)
 	helper.PanicIfError(err)
 	id, err := result.LastInsertId()
 	helper.PanicIfError(err)
@@ -42,7 +42,7 @@ func (repository *PegawaiRepositoryImpl) FindById(pegawaiId int) (domain.Pegawai
 	helper.PanicIfError(err)
 	defer rows.Close()
 	if rows.Next() {
-		err := rows.Scan(&pegawai.Id, &pegawai.Name, &pegawai.Alamat, &pegawai.Telepon)
+		err := rows.Scan(&pegawai.Id, &pegawai.Nama, &pegawai.Alamat, &pegawai.Telepon)
 		helper.PanicIfError(err)
 		return pegawai, nil
 	} else {
@@ -54,8 +54,8 @@ func (repository *PegawaiRepositoryImpl) FindById(pegawaiId int) (domain.Pegawai
 // Update implements PegawaiRepository.
 func (repository *PegawaiRepositoryImpl) Update(pegawai domain.Pegawai) domain.Pegawai {
 	con := db.CreateCon()
-	SQL := "update pegawai set name = ? ,alamat =?, telepon=? where id = ?"
-	_, err := con.Exec(SQL, pegawai.Name, pegawai.Alamat, pegawai.Telepon, pegawai.Id)
+	SQL := "update pegawai set nama = ? ,alamat =?, telepon=? where id = ?"
+	_, err := con.Exec(SQL, pegawai.Nama, pegawai.Alamat, pegawai.Telepon, pegawai.Id)
 	helper.PanicIfError(err)
 
 	return pegawai
@@ -71,7 +71,7 @@ func (repository *PegawaiRepositoryImpl) FindAll() []domain.Pegawai {
 	var listPegawai []domain.Pegawai
 	for rows.Next() {
 		pegawai := domain.Pegawai{}
-		err := rows.Scan(&pegawai.Id, &pegawai.Name, &pegawai.Alamat, &pegawai.Telepon)
+		err := rows.Scan(&pegawai.Id, &pegawai.Nama, &pegawai.Alamat, &pegawai.Telepon)
 		helper.PanicIfError(err)
 		listPegawai = append(listPegawai, pegawai)
 	}
