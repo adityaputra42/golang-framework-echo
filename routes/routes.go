@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"golang_framework_echo/controller"
 	"golang_framework_echo/repository"
 	"golang_framework_echo/service"
@@ -12,8 +13,12 @@ import (
 
 func Init() *echo.Echo {
 	e := echo.New()
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "method=${method}, uri=${uri}, status=${status}\n",
+	// e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+	// 	Format: "method=${method}, uri=${uri}, status=${status}\n",
+	// }))
+	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
+		fmt.Println(string(reqBody))
+		fmt.Println(string(resBody))
 	}))
 	validate := validator.New()
 	repository := repository.NewPegawaiRepository()

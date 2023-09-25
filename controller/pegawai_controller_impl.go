@@ -106,6 +106,6 @@ func (controller *PegawaiControllerImpl) Update(c echo.Context) error {
 	return c.JSON(http.StatusCreated, responseData)
 }
 
-func NewPegawaiController(pegawaiService service.PegawaiService) *PegawaiControllerImpl {
+func NewPegawaiController(pegawaiService service.PegawaiService) PegawaiController {
 	return &PegawaiControllerImpl{PegawaiService: pegawaiService}
 }

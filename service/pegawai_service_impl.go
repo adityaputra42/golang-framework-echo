@@ -73,7 +73,7 @@ func (service *PegawaiServiceImpl) Update(req request.UpdatePegawai) (response.P
 }
 
 func NewPegawaiService(pegawaiRepository repository.PegawaiRepository,
-	Validate *validator.Validate) *PegawaiServiceImpl {
+	Validate *validator.Validate) PegawaiService {
 	return &PegawaiServiceImpl{PegawaiRepository: pegawaiRepository, Validate: Validate}
 
 }

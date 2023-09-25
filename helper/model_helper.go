@@ -22,3 +22,11 @@ func ToPegawaiResponses(listPegawai []domain.Pegawai) []response.PegawaiResponse
 	}
 	return listPegawaiResponse
 }
+
+func ToUserResponse(user domain.User) response.UserResponse {
+	return response.UserResponse{
+		Id:       user.Id,
+		Username: user.Username,
+	}
+
+}
