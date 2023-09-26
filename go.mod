@@ -9,12 +9,14 @@ require (
 	github.com/tkanos/gonfig v0.0.0-20210106201359-53e13348de2f
 )
 
+require github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+
 require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
-	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/go-playground/universal-translator v0.18.1 //
+	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/google/wire v0.5.0 // indirect
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
@@ -23,7 +25,7 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/crypto v0.11.0
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect

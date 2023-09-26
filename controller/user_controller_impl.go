@@ -70,7 +70,27 @@ func (controller *UserControllerImpl) FetchUSer(c echo.Context) error {
 
 // Login implements UserController.
 func (controller *UserControllerImpl) Login(c echo.Context) error {
-	panic("unimplemented")
+	username := c.FormValue("username")
+	password := c.FormValue("password")
+
+	res, err := controller.UserService.Login(username, password)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
+	if !res {
+		return echo.ErrUnauthorized
+	}
+	
+	responseData := web.BaseResponse{
+		Status:  http.StatusCreated,
+		Message: "Success",
+		Data:    res,
+	}
+
+	return c.JSON(http.StatusCreated, responseData)
+
 }
 
 // Update implements UserController.

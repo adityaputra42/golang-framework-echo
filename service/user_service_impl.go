@@ -85,6 +85,6 @@ func (service *UserServiceImpl) Update(req request.UpdateUser) (response.UserRes
 
 }
 
-func NewUserRepository(userRespository repository.UserRepository, validate *validator.Validate) UserService {
+func NewUserService(userRespository repository.UserRepository, validate *validator.Validate) UserService {
 	return &UserServiceImpl{UserRepository: userRespository, Validate: validate}
 }

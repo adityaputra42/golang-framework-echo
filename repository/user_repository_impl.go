@@ -14,7 +14,7 @@ type UserRepositoryImpl struct {
 func (*UserRepositoryImpl) Create(user domain.User) domain.User {
 	con := db.CreateCon()
 	hash, _ := helper.HashPassword(user.Password)
-	SQL := "insert into userr(username,password) values(?,?)"
+	SQL := "insert into users(username,password) values(?,?)"
 	statement, err := con.Prepare(SQL)
 	helper.PanicIfError(err)
 	result, err := statement.Exec(user.Username, hash)
@@ -28,7 +28,7 @@ func (*UserRepositoryImpl) Create(user domain.User) domain.User {
 // Delete implements UserRepository.
 func (*UserRepositoryImpl) Delete(user domain.User) {
 	con := db.CreateCon()
-	SQL := "delete from pegawai where id = ?"
+	SQL := "delete from users where id = ?"
 	_, err := con.Exec(SQL, user.Id)
 	helper.PanicIfError(err)
 }
@@ -36,7 +36,7 @@ func (*UserRepositoryImpl) Delete(user domain.User) {
 // FecthUser implements UserRepository.
 func (*UserRepositoryImpl) FindById(UserId int) (domain.User, error) {
 	con := db.CreateCon()
-	SQL := "select * from pegawai where id = ?"
+	SQL := "select * from users where id = ?"
 	rows, err := con.Query(SQL, UserId)
 	user := domain.User{}
 	helper.PanicIfError(err)
@@ -47,7 +47,7 @@ func (*UserRepositoryImpl) FindById(UserId int) (domain.User, error) {
 		return user, nil
 	} else {
 
-		return user, errors.New("pegawai is not found")
+		return user, errors.New("user is not found")
 	}
 }
 
@@ -55,7 +55,7 @@ func (*UserRepositoryImpl) FindById(UserId int) (domain.User, error) {
 func (*UserRepositoryImpl) Update(user domain.User) domain.User {
 	con := db.CreateCon()
 	hash, _ := helper.HashPassword(user.Password)
-	SQL := "update user set username = ? ,pasword =? where id = ?"
+	SQL := "update users set username = ? ,pasword =? where id = ?"
 	_, err := con.Exec(SQL, user.Username, hash, user.Id)
 	helper.PanicIfError(err)
 	return user
@@ -64,7 +64,7 @@ func (*UserRepositoryImpl) Update(user domain.User) domain.User {
 // FindByUsername implements UserRepository.
 func (*UserRepositoryImpl) FindByUsername(Username string) (domain.User, error) {
 	con := db.CreateCon()
-	SQL := "select * from pegawai where username = ?"
+	SQL := "select * from users where username = ?"
 	rows, err := con.Query(SQL, Username)
 	user := domain.User{}
 	helper.PanicIfError(err)
