@@ -13,7 +13,7 @@ type PegawaiRepositoryImpl struct {
 // Create implements PegawaiRepository.
 func (repository *PegawaiRepositoryImpl) Create(pegawai domain.Pegawai) domain.Pegawai {
 	con := db.CreateCon()
-	SQL := "insert into pegawai(name,alamat,telepon) values(?,?,?)"
+	SQL := "insert into pegawai(nama,alamat,telepon) values(?,?,?)"
 	statement, err := con.Prepare(SQL)
 	helper.PanicIfError(err)
 	result, err := statement.Exec(pegawai.Nama, pegawai.Alamat, pegawai.Telepon)
@@ -54,7 +54,7 @@ func (repository *PegawaiRepositoryImpl) FindById(pegawaiId int) (domain.Pegawai
 // Update implements PegawaiRepository.
 func (repository *PegawaiRepositoryImpl) Update(pegawai domain.Pegawai) domain.Pegawai {
 	con := db.CreateCon()
-	SQL := "update pegawai set name = ? ,alamat =?, telepon=? where id = ?"
+	SQL := "update pegawai set nama = ? ,alamat =?, telepon=? where id = ?"
 	_, err := con.Exec(SQL, pegawai.Nama, pegawai.Alamat, pegawai.Telepon, pegawai.Id)
 	helper.PanicIfError(err)
 

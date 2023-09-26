@@ -1,7 +1,7 @@
 package request
 
 type UpdateUser struct {
-	Id       int    `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Id          int    `json:"id"`
+	OldPassword string `json:"old_password"`
+	Password    string `json:"password"`
 }

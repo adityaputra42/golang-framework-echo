@@ -7,7 +7,10 @@ import (
 	"golang_framework_echo/service"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	echo "github.com/labstack/echo/v4"
 )
 
@@ -53,19 +56,32 @@ func (controller *UserControllerImpl) Delete(c echo.Context) error {
 
 // FetchUSer implements UserController.
 func (controller *UserControllerImpl) FetchUSer(c echo.Context) error {
-	pegawaiId := c.Param("pegawaiId")
-	id, err := strconv.Atoi(pegawaiId)
-	helper.PanicIfError(err)
-	result, err := controller.UserService.FecthUser(id)
+
+	tokenString := c.Request().Header.Get("Authorization")
+	tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		return err
 	}
-	responseData := web.BaseResponse{
-		Status:  http.StatusCreated,
-		Message: "Success",
-		Data:    result,
+	if claim, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		username := claim["username"].(string)
+		result, err := controller.UserService.FecthUser(username)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
+		responseData := web.BaseResponse{
+			Status:  http.StatusCreated,
+			Message: "Success",
+			Data:    result,
+		}
+		return c.JSON(http.StatusCreated, responseData)
+	} else {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Invalid Token"})
 	}
-	return c.JSON(http.StatusCreated, responseData)
+
 }
 
 // Login implements UserController.
@@ -82,11 +98,22 @@ func (controller *UserControllerImpl) Login(c echo.Context) error {
 	if !res {
 		return echo.ErrUnauthorized
 	}
-	
+
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["username"] = username
+	claims["level"] = "application"
+	claims["expired"] = time.Now().Add(time.Hour * 24).Unix()
+	t, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	}
+
 	responseData := web.BaseResponse{
 		Status:  http.StatusCreated,
 		Message: "Success",
-		Data:    res,
+		Data:    t,
 	}
 
 	return c.JSON(http.StatusCreated, responseData)
@@ -94,25 +121,38 @@ func (controller *UserControllerImpl) Login(c echo.Context) error {
 }
 
 // Update implements UserController.
-func (controller *UserControllerImpl) Update(c echo.Context) error {
-	pegawaiId := c.Param("userId")
-	id, err := strconv.Atoi(pegawaiId)
-	helper.PanicIfError(err)
-	body := new(request.UpdateUser)
-	body.Id = id
-	if err := c.Bind(body); err != nil {
-		return err
-	}
-	result, err := controller.UserService.Update(*body)
+func (controller *UserControllerImpl) UpdatePassword(c echo.Context) error {
+
+	tokenString := c.Request().Header.Get("Authorization")
+	tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
-	responseData := web.BaseResponse{
-		Status:  http.StatusCreated,
-		Message: "Success",
-		Data:    result,
+	if claim, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		username := claim["username"].(string)
+
+		body := new(request.UpdateUser)
+		if err := c.Bind(body); err != nil {
+			return err
+		}
+		result, err := controller.UserService.UpdatePassword(*body, username)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
+		responseData := web.BaseResponse{
+			Status:  http.StatusCreated,
+			Message: "Success",
+			Data:    result,
+		}
+		return c.JSON(http.StatusCreated, responseData)
+	} else {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Invalid Token"})
 	}
-	return c.JSON(http.StatusCreated, responseData)
+
 }
 
 func NewUserController(userService service.UserService) UserController {

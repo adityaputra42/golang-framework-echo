@@ -8,7 +8,7 @@ import (
 type UserService interface {
 	Create(req request.CreateUser) (response.UserResponse, error)
 	Login(username, password string) (bool, error)
-	Update(req request.UpdateUser) (response.UserResponse, error)
+	UpdatePassword(req request.UpdateUser, username string) (response.UserResponse, error)
 	Delete(userId int) error
-	FecthUser(userId int) (response.UserResponse, error)
+	FecthUser(username string) (response.UserResponse, error)
 }

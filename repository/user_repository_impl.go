@@ -52,11 +52,11 @@ func (*UserRepositoryImpl) FindById(UserId int) (domain.User, error) {
 }
 
 // Update implements UserRepository.
-func (*UserRepositoryImpl) Update(user domain.User) domain.User {
+func (*UserRepositoryImpl) UpdatePassword(user domain.User) domain.User {
 	con := db.CreateCon()
 	hash, _ := helper.HashPassword(user.Password)
-	SQL := "update users set username = ? ,pasword =? where id = ?"
-	_, err := con.Exec(SQL, user.Username, hash, user.Id)
+	SQL := "update users set password =? where id = ?"
+	_, err := con.Exec(SQL, hash, user.Id)
 	helper.PanicIfError(err)
 	return user
 }

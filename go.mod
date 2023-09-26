@@ -9,7 +9,10 @@ require (
 	github.com/tkanos/gonfig v0.0.0-20210106201359-53e13348de2f
 )
 
-require github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/labstack/echo-jwt/v4 v4.2.0 // indirect
+)
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect

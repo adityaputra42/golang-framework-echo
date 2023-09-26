@@ -42,8 +42,8 @@ func (service *UserServiceImpl) Delete(userId int) error {
 }
 
 // FecthUser implements UserService.
-func (service *UserServiceImpl) FecthUser(userId int) (response.UserResponse, error) {
-	pegawai, err := service.UserRepository.FindById(userId)
+func (service *UserServiceImpl) FecthUser(username string) (response.UserResponse, error) {
+	pegawai, err := service.UserRepository.FindByUsername(username)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
@@ -69,18 +69,21 @@ func (service *UserServiceImpl) Login(username string, password string) (bool, e
 	return true, nil
 }
 
-// Update implements UserService.
-func (service *UserServiceImpl) Update(req request.UpdateUser) (response.UserResponse, error) {
+// Update implements UserService.,
+func (service *UserServiceImpl) UpdatePassword(req request.UpdateUser, username string) (response.UserResponse, error) {
 	err := service.Validate.Struct(req)
 	helper.PanicIfError(err)
-	user, err := service.UserRepository.FindById(req.Id)
+	user, err := service.UserRepository.FindByUsername(username)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-	user.Username = req.Username
+	match, err := helper.CheckPasswordHash(req.OldPassword, user.Password)
+	if !match {
+		fmt.Println("hash and password doesn't match")
+		helper.PanicIfError(err)
+	}
 	user.Password = req.Password
-
-	user = service.UserRepository.Update(user)
+	user = service.UserRepository.UpdatePassword(user)
 	return helper.ToUserResponse(user), nil
 
 }

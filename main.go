@@ -7,6 +7,7 @@ import (
 
 func main() {
 	db.InitDB()
-	e := routes.Init()
-	e.Logger.Fatal(e.Start(":9000"))
+	server := routes.Init()
+	// e := InitializedServer()
+	server.Logger.Fatal(server.Start(":9000"))
 }
